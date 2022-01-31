@@ -1,0 +1,32 @@
+.SerieCounter {
+    width: 100%;
+    background-color: #ededed;
+    color: #010140;
+    font-size: 0.9em;
+    font-weight: bold;
+    padding: 5px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.SerieCounter .counter {
+    margin-bottom: 5px;
+}
+
+@media screen and (min-width: 1022px) {
+    .SerieCounter {
+        flex-direction: row;
+        padding: 10px 0;
+        justify-content: center;
+    }
+
+    .SerieCounter .counter {
+        margin-bottom: 0;
+    }
+
+    .SerieCounter .numbers {
+        margin-right: 15px;
+    }
+}
+

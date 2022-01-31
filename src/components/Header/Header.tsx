@@ -1,11 +1,19 @@
 import { FC } from 'react';
+import './Header.css';
 
-interface HeaderProps {};
+import Container from '../Container';
+import Logo from '../Logo';
 
-const Header: FC<HeaderProps> = ({}): JSX.Element => {
+const Header: FC = (): JSX.Element => {
     return (
-        <div className="">
-            <header>This is th header</header>
+        <div className="Header">
+            <Container>
+                <header>
+                    <div className="Logo">
+                        <Logo/>
+                    </div>
+                 </header>
+            </Container>
         </div>
     );
 };

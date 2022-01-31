@@ -1,0 +1,24 @@
+.Card-Detail {
+    color: #010140;
+    font-weight: bold;
+    background-color: #ededed;
+    border-radius: 2px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.Card-Detail .Card-Detail-Image {
+    overflow: hidden;
+    width: 50%;
+    height: 50%;
+}
+
+.Card-Detail .Card-Detail-Image > img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 2px;
+}

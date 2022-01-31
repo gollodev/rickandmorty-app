@@ -1,0 +1,45 @@
+.Button {
+    background-color: #d1e52b;
+    font-weight: bold;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.medium {
+    padding: 14px 20px;
+    margin: 8px 0;
+}
+
+.small {
+    padding: 5px 10px;
+    margin: 5px 0;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+    .mediumWidth {
+        width: 40%;
+    }
+}
+
+@media screen and (min-width: 1022px) {
+    .mediumWidth {
+        width: 60%;
+    }
+}
+
+.Button:hover {
+    background-color: #cadd2b;
+}
+
+@media screen and (min-width: 1022px) {
+    .block {
+        width: 20%;
+    }
+}

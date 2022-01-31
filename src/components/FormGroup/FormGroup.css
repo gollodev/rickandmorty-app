@@ -1,0 +1,11 @@
+.FormGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+@media screen and (min-width: 1022px) {
+    .FormGroup {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
