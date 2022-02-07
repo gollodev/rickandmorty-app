@@ -20,6 +20,7 @@ import SerieCounter from '../../components/SerieCounter';
 import Card         from '../../components/Card';
 import CardDetail   from '../../components/CardDetail';
 import Message      from '../../components/Message';
+import Spinner      from '../../components/Spinner';
 
 // api imports
 import axios from 'axios';
@@ -108,15 +109,17 @@ const characterDetailState: Character = {
 };
 
 const HomePage: FC = (): JSX.Element => {
-    const [query, setQuery]           = useState<string>('');
-    const [results, setResults]       = useState<any[]>([]);
-    const [characters, setCharacters] = useState<DataAPI>(initialState);
-    const [episodes, setEpisodes]     = useState<DataAPI>(initialState);
-    const [locations, setLocations]   = useState<DataAPI>(initialState);
-    const [error, setError]           = useState<boolean>(false);
+    const [query, setQuery]             = useState<string>('');
+    const [results, setResults]         = useState<any[]>([]);
+    const [characters, setCharacters]   = useState<DataAPI>(initialState);
+    const [episodes, setEpisodes]       = useState<DataAPI>(initialState);
+    const [locations, setLocations]     = useState<DataAPI>(initialState);
+    const [error, setError]             = useState<boolean>(false);
+    const [loading, setLoading]         = useState<boolean>(false);
     const [characterDetail, setCharacterDetail] = useState<Character>(characterDetailState);
 
     const getApi = useCallback(async () => {
+        setLoading(true);
         try {
             const response = await axios.get(baseApiUrl);
             if (response.status === 200) {
@@ -141,6 +144,7 @@ const HomePage: FC = (): JSX.Element => {
                             setEpisodes(dataEpisodes);
                             setLocations(dataLocations);
                             setResults(dataCharacters.results);
+                            setLoading(false);
                             setError(false);
                        })
                        .catch(error => setError(true));
@@ -152,6 +156,18 @@ const HomePage: FC = (): JSX.Element => {
         }
     }, []);
 
+    const getCharacter = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${baseApiUrl}/character/?name=${query.split('%')}`);
+            setResults(response.data.results);
+            setLoading(false);
+            setError(false);
+        } catch (error) {
+            setError(true);
+        }
+    }, [query]);
+
     useEffect(() => {
         getApi();
     }, [getApi]);
@@ -162,71 +178,65 @@ const HomePage: FC = (): JSX.Element => {
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        const foundCharacters = results.filter((result: Character): any => 
-            result.name.toLowerCase().includes(query.toLowerCase())
-        );
-        setResults(foundCharacters);
-        
-        console.log(results);
+        getCharacter();
     };
 
     return (
         <div className="HomePage">
             <Container>
-                {
-                    error ? 
-                        (<Message label="Recarga la pagina o Intenta mas tarde :("/>)
-                        :
-                        (<div className="HomePage-Content">
-                            <div className="HomePage-Search">
-                                <FormGroup onSubmit={handleSubmit}>
-                                    <TextField
-                                        type="search"
-                                        placeholder="Escribe el nombre de tu personaje favorito"
-                                        value={query}
-                                        onChange={handleTextField}
-                                    />
-                                    <Button label="Buscar" size="medium"/>
-                                </FormGroup>
+                {(loading && <Spinner/>)}
+                {(error && <Message label="Recarga la pagina o Intenta mas tarde :("/>)}
+                {       
+                    <div className="HomePage-Content">
+                        <div className="HomePage-Search">
+                            <FormGroup onSubmit={handleSubmit}>
+                                <TextField
+                                    type="search"
+                                    placeholder="Escribe el nombre de tu personaje favorito"
+                                    value={query}
+                                    onChange={handleTextField}
+                                />
+                                <Button label="Buscar" size="medium"/>
+                            </FormGroup>
+                        </div>
+                        <div className="HomePage-SerieCounter">
+                            <SerieCounter
+                                characters={characters.info.count}
+                                episodes={episodes.info.count}
+                                locations={locations.info.count}
+                            />
+                        </div>
+                        <div className="HomePage-Results">
+                            <div className="results">
+                                {
+                                    results && results.length > 0 ? (
+                                        results.map(result => 
+                                            <div className="results-card">
+                                                <Card
+                                                    key={result.id}
+                                                    name={result.name}
+                                                    status={result.status}
+                                                    species={result.species}
+                                                    image={result.image}
+                                                    onClick={() => setCharacterDetail(result)}
+                                                />
+                                            </div>
+                                        )
+                                    ) : (<h2>No items found :(</h2>)
+                                }
                             </div>
-                            <div className="HomePage-SerieCounter">
-                                <SerieCounter
-                                    characters={characters.info.count}
-                                    episodes={episodes.info.count}
-                                    locations={locations.info.count}
+                            <div className="detail">
+                                <CardDetail
+                                    image={characterDetail.image}
+                                    name={characterDetail.name}
+                                    gender={characterDetail.gender}
+                                    location={characterDetail.location.name}
+                                    origin={characterDetail.origin.name}
+                                    episodesNumbers={characterDetail.episode.length}
                                 />
                             </div>
-                            <div className="HomePage-Results">
-                                <div className="results">
-                                    {
-                                        results && results.length > 0 ? (
-                                            results.map(result => 
-                                                <div className="results-card">
-                                                    <Card
-                                                        key={result.id}
-                                                        name={result.name}
-                                                        status={result.status}
-                                                        species={result.species}
-                                                        image={result.image}
-                                                        onClick={() => setCharacterDetail(result)}
-                                                    />
-                                                </div>
-                                            )
-                                        ) : (<h2>No items found :(</h2>)
-                                    }
-                                </div>
-                                <div className="detail">
-                                    <CardDetail
-                                        image={characterDetail.image}
-                                        name={characterDetail.name}
-                                        gender={characterDetail.gender}
-                                        location={characterDetail.location.name}
-                                        origin={characterDetail.origin.name}
-                                        episodesNumbers={characterDetail.episode.length}
-                                    />
-                                </div>
-                            </div>
-                        </div>)
+                        </div>
+                    </div>
                 }
             </Container>
         </div>
